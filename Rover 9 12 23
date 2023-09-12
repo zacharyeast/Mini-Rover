@@ -25,6 +25,10 @@ import time
 from pygame import mixer
 from time import sleep
 import sys
+from picamera2.encoders import H264Encoder
+from picamera2 import Picamera2, Preview
+import time
+
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(7,GPIO.OUT)
@@ -146,6 +150,15 @@ def motion_lapseslow3():
         key_right2()
         key_up()
         key_slow3()
+picam2 = Picamera2()
+video_config = picam2.create_video_configuration(main={"size": (1920, 1080)}, lores={"size": (640, 480)}, display="lores")
+picam2.configure(video_config)
+encoder = H264Encoder(bitrate=10000000)
+output = "test.h264"
+
+picam2.start_preview(Preview.QTGL)
+picam2.start_recording(encoder, output)
+
 def main():
     pygame.init()
     screen = pygame.display.set_mode((380, 380))
@@ -163,7 +176,8 @@ def main():
     pygame.draw.rect(screen, (130, 35, 220), pygame.Rect(0, 100, 60, 60)) # turn on
     pygame.display.flip()
     
-    if True:                 
+    if True:
+    
         for event in pygame.event.get():            
             if event.type == pygame.QUIT:                
                 GPIO.cleanup()
